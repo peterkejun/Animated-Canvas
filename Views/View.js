@@ -1,39 +1,66 @@
+import Translation from '../Animations/Translation.js';
+
 class View {
+    #animations;
+
     constructor(x, y, draw) {
-        this.coords = { x, y };
+        this.graphics = {
+            x,
+            y,
+        }
         this.draw = draw;
-        this.translation = null;
         this.animationDuration = 500;
         this.delegate = null;
+        this.#animations = new Set();
     }
+
+    addAnimation = animation => {
+        // must be of type Animation
+        if (!(animation instanceof Translation)) {
+            throw new Error("Animation added to view must be of type Animation or any of its subclasses.");
+        }
+        // add animation
+        this.#animations.add(animation);
+    }
+
+    hasAnimations = () => this.#animations.size !== 0;
 
     masterDraw = (context, timestamp, canvasWidth, canvasHeight) => {
         this.timestamp = timestamp;
-        if (this.translation && this.startTimestamp) {
-            const timeDelta = timestamp - this.startTimestamp;
-            const percentage = Math.min(1, timeDelta / this.animationDuration);
-            const x = this.translation.srcX + this.translation.getDeltaX() * percentage;
-            const y = this.translation.srcY + this.translation.getDeltaY() * percentage;
-            this.draw(context, canvasWidth, canvasHeight, x, y, timestamp);
-            if (percentage >= 1) {
-                this.coords = {
-                    x: this.translation.destX,
-                    y: this.translation.destY,
-                };
-                this.translation = null;
-                this.startTimestamp = undefined;
+        this.#animations.forEach(animation => {
+            animation.transform(timestamp, this.graphics);
+            if (animation.isFinished) {
+                this.#animations.delete(animation);
             }
-            return;
-        }
-        this.draw(context, canvasWidth, canvasHeight, this.coords.x, this.coords.y, timestamp);
+        });
+        this.draw(context, canvasWidth, canvasHeight, this.graphics.x, this.graphics.y, timestamp);
+    }
+
+    setX = x => {
+        if (!x) return;
+        this.graphics.x = x;
+        this.delegate.requestRedraw();
+    }
+
+    setY = y => {
+        if (!y) return;
+        this.graphics.y = y;
+        this.delegate.requestRedraw();
+    }
+
+    setXY = (x, y) => {
+        if (!x || !y) return;
+        this.graphics.x = x;
+        this.graphics.y = y;
+        this.delegate.requestRedraw();
     }
 
     translate = (x, y) => {
-        this.startTimestamp = this.timestamp;
-        this.translation = new Translation(this.coords.x, this.coords.y, x, y);
+        const translation = new Translation(this.graphics.x, this.graphics.y, x, y);
+        this.addAnimation(translation);
         console.log(`new translation to ${x}, ${y}`)
         if (this.delegate) {
-            this.delegate.notifyNewTranslation();
+            this.delegate.requestRedraw();
         }
     }
 }

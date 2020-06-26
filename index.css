@@ -1,0 +1,18 @@
+#canvas-wrapper {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+#test-canvas {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+#button-group {
+    position: absolute;
+    left: 0;
+    top: 0;
+}

@@ -1,7 +1,10 @@
+import View from '../Views/View.js';
+
 class AnimatedCanvas {
     constructor(canvas) {
         this.canvas = canvas;
         this.context = canvas.getContext('2d');
+        this.resize(this.canvas.clientWidth, this.canvas.clientHeight);
         this.views = [];
         this.drawPaused = true;
     }
@@ -40,7 +43,7 @@ class AnimatedCanvas {
         }
     }
 
-    notifyNewTranslation = () => {
+    requestRedraw = () => {
         if (this.drawPaused) {
             this.drawPaused = false;
             requestAnimationFrame(timestamp => {
@@ -64,19 +67,18 @@ class AnimatedCanvas {
         // clear canvas
         this.context.clearRect(0, 0, canvasWidth, canvasHeight);
         // draw views
-        let hasTranslation = false;
+        let hasAnimation = false;
         for (const view of this.views) {
             view.masterDraw(this.context, timestamp, canvasWidth, canvasHeight);
-            if (view.translation) {
-                // console.log('translation to true')
-                hasTranslation = true;
+            if (view.hasAnimations()) {
+                hasAnimation = true;
             }
         }
         // next frame
         // console.log('no view', this.views.length === 0);
-        if (this.views.length === 0 || !hasTranslation) {
+        if (this.views.length === 0 || !hasAnimation) {
             console.log('draw stopped')
-            // this.drawPaused = true;
+            this.drawPaused = true;
         }
         requestAnimationFrame(timestamp => {
             this.draw(timestamp);
