@@ -55,8 +55,9 @@ class View {
         this.delegate.requestRedraw();
     }
 
-    translate = (x, y) => {
+    translate = (x, y, timingFunction) => {
         const translation = new Translation(this.graphics.x, this.graphics.y, x, y);
+        if (timingFunction) translation.setTimingFunction(timingFunction);
         this.addAnimation(translation);
         console.log(`new translation to ${x}, ${y}`)
         if (this.delegate) {
