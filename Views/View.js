@@ -1,4 +1,6 @@
+import Animation from '../Animations/Animation.js';
 import Translation from '../Animations/Translation.js';
+import Rotation from '../Animations/Rotation.js';
 
 class View {
     #animations;
@@ -7,6 +9,7 @@ class View {
         this.graphics = {
             x,
             y,
+            angle: 0,
         }
         this.draw = draw;
         this.animationDuration = 500;
@@ -16,7 +19,7 @@ class View {
 
     addAnimation = animation => {
         // must be of type Animation
-        if (!(animation instanceof Translation)) {
+        if (!(animation instanceof Animation)) {
             throw new Error("Animation added to view must be of type Animation or any of its subclasses.");
         }
         // add animation
@@ -33,7 +36,14 @@ class View {
                 this.#animations.delete(animation);
             }
         });
+        context.save();
+        context.translate(this.graphics.x, this.graphics.y);
+        context.rotate(this.graphics.angle);
+        context.translate(-this.graphics.x, -this.graphics.y);
+        context.beginPath();
         this.draw(context, canvasWidth, canvasHeight, this.graphics.x, this.graphics.y, timestamp);
+        context.closePath();
+        context.restore();
     }
 
     setX = x => {
@@ -45,21 +55,40 @@ class View {
     setY = y => {
         if (!y) return;
         this.graphics.y = y;
-        this.delegate.requestRedraw();
+        if (this.delegate) this.delegate.requestRedraw();
     }
 
     setXY = (x, y) => {
         if (!x || !y) return;
         this.graphics.x = x;
         this.graphics.y = y;
-        this.delegate.requestRedraw();
+        if (this.delegate) this.delegate.requestRedraw();
+    }
+
+    setAngle = angle => {
+        this.graphics.angle = angle;
+        if (this.delegate) this.delegate.requestRedraw();
+    }
+
+    setAngleInDeg = degAngle => {
+        this.setAngle(degAngle * Math.PI / 180);
     }
 
     translate = (x, y, timingFunction) => {
         const translation = new Translation(this.graphics.x, this.graphics.y, x, y);
         if (timingFunction) translation.setTimingFunction(timingFunction);
         this.addAnimation(translation);
-        console.log(`new translation to ${x}, ${y}`)
+        console.log(`new translation to ${x}, ${y}`);
+        if (this.delegate) {
+            this.delegate.requestRedraw();
+        }
+    }
+
+    rotateTo = (angle, timingFunction) => {
+        const rotation = new Rotation(this.graphics.angle, angle);
+        if (timingFunction) rotation.setTimingFunction(timingFunction);
+        this.addAnimation(rotation);
+        console.log(`new rotation to angle ${angle}`);
         if (this.delegate) {
             this.delegate.requestRedraw();
         }
