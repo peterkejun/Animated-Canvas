@@ -1,7 +1,19 @@
-import View from '../Views/View.js';
+/*
+ Animated Canvas is an EventEmitter.
+ EventEmitter has the same API as 'events.EventEmitter' in NodeJS.
+ events: [
+        'did resize', 
+        'did add view', 
+        'will start draw', 'did start draw', 'will draw', 'did draw', 'did stop draw'
+    ]
+*/
 
-class AnimatedCanvas {
+import View from '../Views/View.js';
+import EventEmitter from '../Helpers/EventEmitter.js';
+
+class AnimatedCanvas extends EventEmitter {
     constructor(canvas) {
+        super();
         // html canvas to draw on
         this.canvas = canvas;
         // cache 2d context
@@ -22,6 +34,8 @@ class AnimatedCanvas {
 
     // resize canvas for HD
     resize = (width, height) => {
+        // emit evnet "will resize"
+        this.emit('will resize', width, height);
         // 2x width, height for HD
         this.canvas.width = width * 2;
         this.canvas.height = height * 2;
@@ -30,6 +44,8 @@ class AnimatedCanvas {
         this.canvas.style.height = `${height}px`;
         // scale 2x for HD
         this.context.scale(2, 2);
+        // emit event "did resize"
+        this.emit('did resize', width, height);
     }
 
     // add a view to canvas, drawn in next draw cycle
@@ -46,12 +62,20 @@ class AnimatedCanvas {
         view.delegate = this;
         // add to views
         this.views.push(view);
+        // emit event "did add view"
+        this.emit('did add view', view);
         // start draw cycle if paused
         if (this.drawPaused) {
+            // emit event "will start draw"
+            this.emit('will start draw');
+            // set pause flag to false
             this.drawPaused = false;
+            // draw
             requestAnimationFrame(timestamp => {
                 this.draw(timestamp);
             })
+            // emit event "did start draw"
+            this.emit('did start draw');
         }
     }
 
@@ -59,21 +83,37 @@ class AnimatedCanvas {
     // delegate function called by view
     requestRedraw = () => {
         if (this.drawPaused) {
+            // emit event "will start draw"
+            this.emit('will start draw');
+            // set pause flag to false
             this.drawPaused = false;
+            // draw
             requestAnimationFrame(timestamp => {
                 this.draw(timestamp);
             })
+            // emit event "did start draw"
+            this.emit('did start draw');
         }
     }
 
     // stop draw cycle
     stopDraw = () => {
+        // emit event "did stop draw"
+        this.emit('will stop draw')
+        // set pause flag to true
         this.drawPaused = true;
+        // emit event "did stop draw"
+        this.emit('did stop draw')
     }
 
     // start draw cycle
     startDraw = () => {
+        // emit event "will start draw"
+        this.emit('will start draw');
+        // set pause flag to false
         this.drawPaused = false;
+        // emit event "did start draw"
+        this.emit('did start draw');
     }
 
     // draw cycle function
@@ -81,8 +121,11 @@ class AnimatedCanvas {
     // can be paused by setting drawPaused to true, 
     // automatically paused if no animations
     draw = timestamp => {
+        // don't draw if paused
         if (this.drawPaused) return;
-        // console.log('draw');
+        // emit event 'will draw'
+        this.emit('will draw', timestamp);
+        // get canvas size
         const { clientWidth: canvasWidth, clientHeight: canvasHeight } = this.canvas;
         // clear canvas
         this.context.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -98,9 +141,11 @@ class AnimatedCanvas {
         }
         // pause draw cycle if no views or no animations
         if (this.views.length === 0 || !hasAnimation) {
-            console.log('draw stopped')
+            this.emit('did stop draw', timestamp);
             this.drawPaused = true;
         }
+        // emit event 'did draw'
+        this.emit('did draw', timestamp);
         // next frame
         requestAnimationFrame(timestamp => {
             this.draw(timestamp);

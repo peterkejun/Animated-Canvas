@@ -8,6 +8,9 @@ const htmlCanvas = document.getElementById('test-canvas');
 
 // create animated canvas from html canvas
 const animatedCanvas = new AnimatedCanvas(htmlCanvas);
+// listen to event "did stop draw"
+animatedCanvas.on('did stop draw', () => console.log('did stop view'));
+
 
 // create a circle and add to canvas
 const circleView = new View(100, 100, (context, canvasWidth, canvasHeight, x, y, timestamp) => {

@@ -19,5 +19,7 @@
     "devDependencies": {
         "http-server": "^0.12.3"
     },
-    "dependencies": {}
+    "dependencies": {
+        "events": "^3.1.0"
+    }
 }
