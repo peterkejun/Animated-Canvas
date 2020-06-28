@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "An animation framework for native HTML canvas",
     "scripts": {
-        "start": "tsc && cp ./src/{index.html,index.css} ./built && npx http-server ./built -e js",
+        "start": "npx webpack && cp ./public/{index.html,index.css} ./built && npx http-server ./built",
         "compile": "tsc",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -18,6 +18,10 @@
     },
     "homepage": "https://github.com/peterkejun/Animated-Canvas#readme",
     "devDependencies": {
-        "http-server": "^0.12.3"
+        "http-server": "^0.12.3",
+        "ts-loader": "^7.0.5",
+        "typescript": "^3.9.5",
+        "webpack": "^4.43.0",
+        "webpack-cli": "^3.3.12"
     }
 }
