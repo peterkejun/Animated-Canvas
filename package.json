@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "description": "An animation framework for native HTML canvas",
     "scripts": {
-        "start": "npx http-server .",
+        "start": "tsc && cp ./src/{index.html,index.css} ./built && npx http-server ./built -e js",
+        "compile": "tsc",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
@@ -18,8 +19,5 @@
     "homepage": "https://github.com/peterkejun/Animated-Canvas#readme",
     "devDependencies": {
         "http-server": "^0.12.3"
-    },
-    "dependencies": {
-        "events": "^3.1.0"
     }
 }

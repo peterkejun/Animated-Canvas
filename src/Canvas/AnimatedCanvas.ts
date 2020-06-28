@@ -12,7 +12,12 @@ import View from '../Views/View.js';
 import EventEmitter from '../Helpers/EventEmitter.js';
 
 class AnimatedCanvas extends EventEmitter {
-    constructor(canvas) {
+    private canvas: HTMLCanvasElement;
+    private context: CanvasRenderingContext2D;
+    private views: Array<View>;
+    private drawPaused: Boolean;
+
+    constructor(canvas: HTMLCanvasElement) {
         super();
         // html canvas to draw on
         this.canvas = canvas;
@@ -33,7 +38,7 @@ class AnimatedCanvas extends EventEmitter {
     }
 
     // resize canvas for HD
-    resize = (width, height) => {
+    resize = (width: number, height: number) => {
         // emit evnet "will resize"
         this.emit('will resize', width, height);
         // 2x width, height for HD
@@ -49,7 +54,7 @@ class AnimatedCanvas extends EventEmitter {
     }
 
     // add a view to canvas, drawn in next draw cycle
-    addView = view => {
+    addView = (view: View) => {
         // must be a View object
         if (!(view instanceof View)) {
             throw new Error("Views added to AnimatedCanvas must be of View type.");
@@ -120,7 +125,7 @@ class AnimatedCanvas extends EventEmitter {
     // draws all views
     // can be paused by setting drawPaused to true, 
     // automatically paused if no animations
-    draw = timestamp => {
+    draw = (timestamp: number) => {
         // don't draw if paused
         if (this.drawPaused) return;
         // emit event 'will draw'

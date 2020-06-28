@@ -1,9 +1,15 @@
-import { AnimationState } from "./Constants.js";
-import { LINEAR } from "./TimingFunction.js";
+import { AnimationState } from "./Constants";
+import { TimingFunction, LINEAR } from "./TimingFunction";
+import { Graphics } from '../Views/View';
 
 class Animation {
   // default animation duration to 500ms
   static defaultDuration = () => 500;
+
+  startTimestamp: number;
+  duration: number;
+  state: AnimationState;
+  timingFunction: TimingFunction;
 
   constructor() {
     // startTimestamp is for calculating elasped time, reset before each animation
@@ -30,6 +36,9 @@ class Animation {
   get isFinished() {
     return this.state === AnimationState.FINISHED;
   }
+
+  // dummy transform function
+  transform = (timestamp: number, graphics: Graphics): void => { };
 }
 
 export default Animation;

@@ -1,10 +1,10 @@
-import AnimatedCanvas from './Canvas/AnimatedCanvas.js';
-import View from './Views/View.js';
+import AnimatedCanvas from './Canvas/AnimatedCanvas';
+import View from './Views/View';
 
 console.log('running script');
 
 // get html canvas
-const htmlCanvas = document.getElementById('test-canvas');
+const htmlCanvas = <HTMLCanvasElement>document.getElementById('test-canvas');
 
 // create animated canvas from html canvas
 const animatedCanvas = new AnimatedCanvas(htmlCanvas);

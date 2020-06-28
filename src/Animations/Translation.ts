@@ -1,9 +1,17 @@
-import Animation from './Animation.js';
-import { AnimationState } from './Constants.js';
+import Animation from './Animation';
+import { AnimationState } from './Constants';
+import { TimingFunction } from './TimingFunction';
+import { Graphics } from '../Views/View';
 
 class Translation extends Animation {
 
-    constructor(srcX, srcY, destX, destY) {
+    srcX: number;
+    srcY: number;
+    destX: number;
+    destY: number;
+    timingFunction: TimingFunction;
+
+    constructor(srcX: number, srcY: number, destX: number, destY: number) {
         super();
         // source coordinates
         this.srcX = srcX;
@@ -14,22 +22,22 @@ class Translation extends Animation {
     }
 
     // set current timing function
-    setTimingFunction = timingFunction => {
+    setTimingFunction = (timingFunction: TimingFunction): void => {
         this.timingFunction = timingFunction;
     }
 
     // delta x from src to dest
-    get deltaX() {
+    get deltaX(): number {
         return this.destX - this.srcX;
     }
 
     // delta y from src to dest
-    get deltaY() {
+    get deltaY(): number {
         return this.destY - this.srcY;
     }
 
     // transform x and y based on timestamp and timing function
-    transform = (timestamp, graphics) => {
+    transform = (timestamp: number, graphics: Graphics): void => {
         // set start timestamp if none
         if (!this.startTimestamp) this.startTimestamp = timestamp;
         // set animation state to running
@@ -37,7 +45,7 @@ class Translation extends Animation {
         // % time since started
         const percentTime = (timestamp - this.startTimestamp) / this.duration;
         // apply timing function for % progress
-        const progress = Math.min(1, this.timingFunction(percentTime));
+        const progress = Math.min(1, this.timingFunction.apply(percentTime));
         // translate x
         graphics.x = this.srcX + this.deltaX * progress;
         // translate y

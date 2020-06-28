@@ -1,9 +1,14 @@
-import Animation from './Animation.js';
-import { AnimationState } from './Constants.js';
+import Animation from './Animation';
+import { AnimationState } from './Constants';
+import { TimingFunction } from './TimingFunction';
+import { Graphics } from '../Views/View';
 
 class Rotation extends Animation {
 
-    constructor(srcAngle, destAngle) {
+    srcAngle: number;
+    destAngle: number
+
+    constructor(srcAngle: number, destAngle: number) {
         super();
         // source radians
         this.srcAngle = srcAngle;
@@ -12,17 +17,17 @@ class Rotation extends Animation {
     }
 
     // set current timing function
-    setTimingFunction = timingFunction => {
+    setTimingFunction = (timingFunction: TimingFunction): void => {
         this.timingFunction = timingFunction;
     }
 
     // delta angle from src to dest
-    get deltaAngle() {
+    get deltaAngle(): number {
         return this.destAngle - this.srcAngle;
     }
 
     // transform angle based on timestamp and timing function
-    transform = (timestamp, graphics) => {
+    transform = (timestamp: number, graphics: Graphics) => {
         // set start timestamp if none
         if (!this.startTimestamp) this.startTimestamp = timestamp;
         // set animation state to running
@@ -30,7 +35,7 @@ class Rotation extends Animation {
         // % time since started
         const percentTime = (timestamp - this.startTimestamp) / this.duration;
         // apply timing function for % progress
-        const progress = Math.min(1, this.timingFunction(percentTime));
+        const progress = Math.min(1, this.timingFunction.apply(percentTime));
         // translate angle
         graphics.angle = this.srcAngle + this.deltaAngle * progress;
         // mark animation stopped if progress >= 100%

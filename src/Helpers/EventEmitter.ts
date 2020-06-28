@@ -1,4 +1,7 @@
 class EventEmitter {
+
+    private observers: Map<string, Array<Function>>;
+
     constructor() {
         // map of observers
         // string type => list of callbacks
@@ -7,7 +10,7 @@ class EventEmitter {
 
     // add a callback for an type
     // O(1)
-    on = (type, cb) => {
+    on = (type: string, cb: Function): void => {
         // get list of cb of type
         const observer = this.observers.get(type);
         // add cb to list if list exists
@@ -18,7 +21,7 @@ class EventEmitter {
 
     // remove a callback for an type
     // O(n) { n: # callbacks }
-    remove = (type, cb) => {
+    remove = (type: string, cb: Function): void => {
         // get list of cb of type;
         const observer = this.observers.get(type);
         // return if no such list exists
@@ -36,7 +39,7 @@ class EventEmitter {
 
     // emit an event for type with arguments
     // O(n) { n: # callbacks }
-    emit = (type, ...args) => {
+    emit = (type: string, ...args: any[]): void => {
         // get list of cb of type
         const observer = this.observers.get(type);
         // return if no such list exist
