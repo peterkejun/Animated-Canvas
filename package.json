@@ -1,27 +1,29 @@
 {
-    "name": "animated-canvas",
-    "version": "1.0.0",
-    "description": "An animation framework for native HTML canvas",
-    "scripts": {
-        "start": "npx webpack && cp ./public/{index.html,index.css} ./built && npx http-server ./built",
-        "compile": "tsc",
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+ssh://git@github.com/peterkejun/Animated-Canvas.git"
-    },
-    "author": "Peter Ke",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/peterkejun/Animated-Canvas/issues"
-    },
-    "homepage": "https://github.com/peterkejun/Animated-Canvas#readme",
-    "devDependencies": {
-        "http-server": "^0.12.3",
-        "ts-loader": "^7.0.5",
-        "typescript": "^3.9.5",
-        "webpack": "^4.43.0",
-        "webpack-cli": "^3.3.12"
-    }
+  "name": "animated-canvas",
+  "version": "1.0.5",
+  "description": "An animation framework for native HTML canvas",
+  "main": "./compiled/index.js",
+  "scripts": {
+    "dev": "tsc && npx webpack && npx http-server .",
+    "compile": "tsc",
+    "build": "",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/peterkejun/Animated-Canvas.git"
+  },
+  "author": "Peter Ke",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/peterkejun/Animated-Canvas/issues"
+  },
+  "homepage": "https://github.com/peterkejun/Animated-Canvas#readme",
+  "devDependencies": {
+    "http-server": "^0.12.3",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
+  }
 }

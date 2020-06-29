@@ -1,7 +1,7 @@
-import Animation from '../Animations/Animation';
-import Translation from '../Animations/Translation';
-import Rotation from '../Animations/Rotation';
-import { TimingFunction } from '../Animations/TimingFunction';
+import Animation from '../Animations/Animation.js';
+import Translation from '../Animations/Translation.js';
+import Rotation from '../Animations/Rotation.js';
+import { TimingFunction } from '../Animations/TimingFunction.js';
 
 export interface Graphics {
     x: number,

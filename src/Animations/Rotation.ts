@@ -1,7 +1,7 @@
-import Animation from './Animation';
-import { AnimationState } from './Constants';
-import { TimingFunction } from './TimingFunction';
-import { Graphics } from '../Views/View';
+import Animation from './Animation.js';
+import { AnimationState } from './Constants.js';
+import { TimingFunction } from './TimingFunction.js';
+import { Graphics } from '../Views/View.js';
 
 class Rotation extends Animation {
 

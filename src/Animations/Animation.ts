@@ -1,6 +1,6 @@
-import { AnimationState } from "./Constants";
-import { TimingFunction, LINEAR } from "./TimingFunction";
-import { Graphics } from '../Views/View';
+import { AnimationState } from "./Constants.js";
+import { TimingFunction, LINEAR } from "./TimingFunction.js";
+import { Graphics } from '../Views/View.js';
 
 class Animation {
   // default animation duration to 500ms

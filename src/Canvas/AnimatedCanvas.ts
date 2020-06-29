@@ -8,8 +8,8 @@
     ]
 */
 
-import View from '../Views/View';
-import EventEmitter from '../Helpers/EventEmitter';
+import View from '../Views/View.js';
+import EventEmitter from '../Helpers/EventEmitter.js';
 
 class AnimatedCanvas extends EventEmitter {
     private canvas: HTMLCanvasElement;
