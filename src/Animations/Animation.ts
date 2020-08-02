@@ -12,29 +12,29 @@ class Animation {
   timingFunction: TimingFunction;
 
   constructor () {
-    // startTimestamp is for calculating elasped time, reset before each animation
-    this.startTimestamp = undefined
-    // default animation animation
-    this.duration = Animation.defaultDuration()
-    // default to idle state
-    this.state = AnimationState.IDLE
-    // default to linear timing function
-    this.timingFunction = LINEAR
+      // startTimestamp is for calculating elasped time, reset before each animation
+      this.startTimestamp = undefined
+      // default animation animation
+      this.duration = Animation.defaultDuration()
+      // default to idle state
+      this.state = AnimationState.IDLE
+      // default to linear timing function
+      this.timingFunction = LINEAR
   }
 
   // returns if animation is idle
   get isIdle () {
-    return this.state === AnimationState.IDLE
+      return this.state === AnimationState.IDLE
   }
 
   // returns if animation is running
   get isRunning () {
-    return this.state === AnimationState.RUNNING
+      return this.state === AnimationState.RUNNING
   }
 
   // returns if animation is finished
   get isFinished () {
-    return this.state === AnimationState.FINISHED
+      return this.state === AnimationState.FINISHED
   }
 
   // dummy transform function
