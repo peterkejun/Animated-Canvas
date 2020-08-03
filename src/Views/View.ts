@@ -17,6 +17,7 @@ export interface Graphics {
     position: Point,
     size: Size,
     angle: number,
+    zIndex: number,
 };
 
 type DrawFunction = (

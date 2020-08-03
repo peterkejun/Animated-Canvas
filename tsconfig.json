@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
-        "outDir": "compiled",
+        "outDir": "lib",
         "allowJs": true,
+        "declaration": true,
         "module": "es6",
         "target": "es5",
         "noImplicitAny": true,

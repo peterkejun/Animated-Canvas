@@ -8,7 +8,7 @@
     ]
 */
 
-import View from '../Views/View.js'
+import View, { Point } from '../Views/View.js'
 import EventEmitter from '../Helpers/EventEmitter.js'
 
 class AnimatedCanvas extends EventEmitter {
@@ -16,6 +16,12 @@ class AnimatedCanvas extends EventEmitter {
     private context: CanvasRenderingContext2D;
     private views: Array<View>;
     private drawPaused: Boolean;
+
+    /**
+     * On click handler of the canvas, called before all on click handlers of views.
+     * @type {(event: MouseEvent) => void}
+     */
+    onClick: (event: MouseEvent) => void;
 
     constructor (canvas: HTMLCanvasElement) {
         super()
@@ -25,22 +31,26 @@ class AnimatedCanvas extends EventEmitter {
         this.context = canvas.getContext('2d')
         // resize canvas for HD
         this.resize(this.canvas.clientWidth, this.canvas.clientHeight)
-        // views are added later on
+        // views are added later on, sorted by z-index asc
         this.views = []
         // high level control to start/pause drawing
         this.drawPaused = true
         // enable hit test
         this.canvas.onclick = (event) => {
-            const { x: boundingX, y: boundingY } = this.canvas.getBoundingClientRect()
-            const mousePoint = {
-                x: event.clientX - boundingX,
-                y: event.clientY - boundingY
-            }
-            for (let i = 0, { length } = this.views; i < length; i++) {
+            // call onClick handler of canvas
+            if (this.onClick) this.onClick(event)
+            // find mouse position relative to canvas
+            const canvasPoint = this.getRelativePosition({
+                x: event.clientX,
+                y: event.clientY
+            })
+            // find view from higher z-index to lower z-index
+            for (let { length } = this.views, i = length - 1; i >= 0; i--) {
                 // if this view does not contain the point, check next one
-                if (!this.views[i].containsPoint(mousePoint)) continue
+                if (!this.views[i].containsPoint(canvasPoint)) continue
                 // if this view contains the point, call onClick handler
                 this.views[i].onClick(event)
+                break
             }
         }
     }
@@ -67,7 +77,11 @@ class AnimatedCanvas extends EventEmitter {
         this.emit('did resize', width, height)
     }
 
-    // add a view to canvas, drawn in next draw cycle
+    /**
+     * Add a view to canvas, drawn in the next draw cycle
+     *
+     * @param view { import("../Views/View") }
+     */
     addView = (view: View) => {
         // must be a View object
         if (!(view instanceof View)) {
@@ -79,8 +93,35 @@ class AnimatedCanvas extends EventEmitter {
         }
         // add canvas as delegate
         view.delegate = this
-        // add to views
-        this.views.push(view)
+        // add view to array
+        if (this.views.length === 0) {
+            this.views.push(view)
+        } else {
+            // binary insert into views array
+            let low = 0; let high = this.views.length; let mid = 0
+            let index = -1
+            while (index === -1) {
+                if (high <= low) {
+                    if (this.views[low]) {
+                        index = view.graphics.zIndex > this.views[low].graphics.zIndex ? low + 1 : low
+                    } else {
+                        index = low
+                    }
+                    break
+                }
+                mid = low + Math.floor((high - low) / 2)
+                if (view.graphics.zIndex === this.views[mid].graphics.zIndex) {
+                    index = mid + 1
+                    break
+                }
+                if (view.graphics.zIndex > this.views[mid].graphics.zIndex) {
+                    low = mid + 1
+                    continue
+                }
+                high = mid - 1
+            }
+            this.views.splice(index, 0, view)
+        }
         // emit event "did add view"
         this.emit('did add view', view)
         // start draw cycle if paused
@@ -96,6 +137,7 @@ class AnimatedCanvas extends EventEmitter {
             // emit event "did start draw"
             this.emit('did start draw')
         }
+        console.log(this.views)
     }
 
     // force start draw cycle
@@ -169,6 +211,14 @@ class AnimatedCanvas extends EventEmitter {
         requestAnimationFrame(timestamp => {
             this.draw(timestamp)
         })
+    }
+
+    getRelativePosition = (point: Point): Point => {
+        const { x: boundingX, y: boundingY } = this.canvas.getBoundingClientRect()
+        return {
+            x: point.x - boundingX,
+            y: point.y - boundingY
+        }
     }
 }
 

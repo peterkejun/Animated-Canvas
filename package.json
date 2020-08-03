@@ -2,9 +2,10 @@
   "name": "animated-canvas",
   "version": "1.0.5",
   "description": "An animation framework for native HTML canvas",
-  "main": "./compiled/index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "dev": "tsc && npx webpack && npx http-server .",
+    "dev": "tsc && npx http-server .",
     "compile": "tsc",
     "build": "",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -20,6 +21,9 @@
     "url": "https://github.com/peterkejun/Animated-Canvas/issues"
   },
   "homepage": "https://github.com/peterkejun/Animated-Canvas#readme",
+  "files": [
+    "lib/**/*"
+  ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.7.1",
     "@typescript-eslint/parser": "^3.7.1",
