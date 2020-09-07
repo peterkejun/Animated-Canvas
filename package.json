@@ -1,13 +1,11 @@
 {
   "name": "animated-canvas",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "description": "An animation framework for native HTML canvas",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "dev": "tsc && npx http-server .",
-    "compile": "tsc",
-    "build": "",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./src/**/*.ts"
   },
@@ -33,7 +31,6 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "http-server": "^0.12.3",
     "ts-loader": "^7.0.5",
     "typescript": "^3.9.5",
     "webpack": "^4.43.0",

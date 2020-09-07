@@ -1,6 +1,3 @@
-import View from './Views/View'
-import AnimatedCanvas from './Canvas/AnimatedCanvas'
-
 export { default as AnimatedCanvas } from './Canvas/AnimatedCanvas.js'
 export { default as Animation } from './Animations/Animation.js'
 export { default as Translation } from './Animations/Translation.js'
