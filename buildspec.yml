@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+    commands:
+      - echo Installing dependencies
+      - npm install
+      - npm install -g npm-cli-login
+  pre_build:
+    commands:
+      - npm-cli-login -u $NPM_USERNAME -p $NPM_PASSWORD -e $NPM_EMAIL
+      - echo Logged in to NPM
+  build:
+    commands:
+      - echo compiling Typescript files
+      - npm run build
+  post_build:
+    commands:
+      - echo Compilation succeeded on `date`
+      - echo Publishing to NPM
+      - npm publish --access public
+      - echo NPM package published on `date`
