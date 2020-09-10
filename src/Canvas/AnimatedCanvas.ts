@@ -1,15 +1,11 @@
 /*
  Animated Canvas is an EventEmitter.
  EventEmitter has the same API as 'events.EventEmitter' in NodeJS.
- events: [
-        'did resize',
-        'did add view',
-        'will start draw', 'did start draw', 'will draw', 'did draw', 'did stop draw'
-    ]
 */
 
 import View, { Point } from '../Views/View.js'
 import EventEmitter from '../Helpers/EventEmitter.js'
+import { CanvasEvent } from './Events.js'
 
 class AnimatedCanvas extends EventEmitter {
     private canvas: HTMLCanvasElement;
@@ -64,7 +60,7 @@ class AnimatedCanvas extends EventEmitter {
     // resize canvas for HD
     resize = (width: number, height: number) => {
         // emit evnet "will resize"
-        this.emit('will resize', width, height)
+        this.emit(CanvasEvent.WILL_RESIZE, width, height)
         // 2x width, height for HD
         this.canvas.width = width * 2
         this.canvas.height = height * 2
@@ -74,7 +70,7 @@ class AnimatedCanvas extends EventEmitter {
         // scale 2x for HD
         this.context.scale(2, 2)
         // emit event "did resize"
-        this.emit('did resize', width, height)
+        this.emit(CanvasEvent.DID_RESIZE, width, height)
     }
 
     /**
@@ -123,11 +119,11 @@ class AnimatedCanvas extends EventEmitter {
             this.views.splice(index, 0, view)
         }
         // emit event "did add view"
-        this.emit('did add view', view)
+        this.emit(CanvasEvent.DID_ADD_VIEW, view)
         // start draw cycle if paused
         if (this.drawPaused) {
         // emit event "will start draw"
-            this.emit('will start draw')
+            this.emit(CanvasEvent.WILL_START_DRAW)
             // set pause flag to false
             this.drawPaused = false
             // draw
@@ -135,7 +131,7 @@ class AnimatedCanvas extends EventEmitter {
                 this.draw(timestamp)
             })
             // emit event "did start draw"
-            this.emit('did start draw')
+            this.emit(CanvasEvent.DID_START_DRAW)
         }
         console.log(this.views)
     }
@@ -145,7 +141,7 @@ class AnimatedCanvas extends EventEmitter {
     requestRedraw = () => {
         if (this.drawPaused) {
         // emit event "will start draw"
-            this.emit('will start draw')
+            this.emit(CanvasEvent.WILL_START_DRAW)
             // set pause flag to false
             this.drawPaused = false
             // draw
@@ -153,28 +149,28 @@ class AnimatedCanvas extends EventEmitter {
                 this.draw(timestamp)
             })
             // emit event "did start draw"
-            this.emit('did start draw')
+            this.emit(CanvasEvent.DID_START_DRAW)
         }
     }
 
     // stop draw cycle
     stopDraw = () => {
-        // emit event "did stop draw"
-        this.emit('will stop draw')
+        // emit event "will stop draw"
+        this.emit(CanvasEvent.WILL_STOP_DRAW)
         // set pause flag to true
         this.drawPaused = true
         // emit event "did stop draw"
-        this.emit('did stop draw')
+        this.emit(CanvasEvent.DID_STOP_DRAW)
     }
 
     // start draw cycle
     startDraw = () => {
         // emit event "will start draw"
-        this.emit('will start draw')
+        this.emit(CanvasEvent.WILL_START_DRAW)
         // set pause flag to false
         this.drawPaused = false
         // emit event "did start draw"
-        this.emit('did start draw')
+        this.emit(CanvasEvent.DID_START_DRAW)
     }
 
     // draw cycle function
@@ -185,7 +181,7 @@ class AnimatedCanvas extends EventEmitter {
         // don't draw if paused
         if (this.drawPaused) return
         // emit event 'will draw'
-        this.emit('will draw', timestamp)
+        this.emit(CanvasEvent.WILL_DRAW, timestamp)
         // get canvas size
         const { clientWidth: canvasWidth, clientHeight: canvasHeight } = this.canvas
         // clear canvas
@@ -202,11 +198,11 @@ class AnimatedCanvas extends EventEmitter {
         }
         // pause draw cycle if no views or no animations
         if (this.views.length === 0 || !hasAnimation) {
-            this.emit('did stop draw', timestamp)
+            this.emit(CanvasEvent.DID_STOP_DRAW, timestamp)
             this.drawPaused = true
         }
         // emit event 'did draw'
-        this.emit('did draw', timestamp)
+        this.emit(CanvasEvent.DID_DRAW, timestamp)
         // next frame
         requestAnimationFrame(timestamp => {
             this.draw(timestamp)
