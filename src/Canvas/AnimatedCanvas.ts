@@ -23,6 +23,11 @@ class AnimatedCanvas extends EventEmitter {
      */
     onClick: (event: MouseEvent) => void;
 
+    /**
+     * Create a new AnimatedCanvas instance and bind it to a <canvas> DOM element
+     * @constructor
+     * @param canvas - the base <canvas> DOM element to bind with views and animations
+     */
     constructor (canvas: HTMLCanvasElement) {
         super()
         // html canvas to draw on
@@ -55,12 +60,20 @@ class AnimatedCanvas extends EventEmitter {
         }
     }
 
-    // returns current canvas size
+    /**
+     * Get current size of the canvas
+     * @returns the current size of the canvas
+     */
     getSize = () => {
         const { clientWidth: width, clientHeight: height } = this.canvas
         return { width, height }
     }
 
+    /**
+     * Resize the canvas
+     * @param width new width to resize the canvas
+     * @param height new height to resize the canvas
+     */
     // resize canvas for HD
     resize = (width: number, height: number) => {
         // emit evnet "will resize"
@@ -125,39 +138,24 @@ class AnimatedCanvas extends EventEmitter {
         // emit event "did add view"
         this.emit('did add view', view)
         // start draw cycle if paused
-        if (this.drawPaused) {
-        // emit event "will start draw"
-            this.emit('will start draw')
-            // set pause flag to false
-            this.drawPaused = false
-            // draw
-            requestAnimationFrame(timestamp => {
-                this.draw(timestamp)
-            })
-            // emit event "did start draw"
-            this.emit('did start draw')
-        }
-        console.log(this.views)
+        this.startDraw()
     }
 
-    // force start draw cycle
-    // delegate function called by view
+    /**
+     * Force a draw cycle to start if not started already
+     */
     requestRedraw = () => {
-        if (this.drawPaused) {
         // emit event "will start draw"
-            this.emit('will start draw')
-            // set pause flag to false
-            this.drawPaused = false
-            // draw
-            requestAnimationFrame(timestamp => {
-                this.draw(timestamp)
-            })
-            // emit event "did start draw"
-            this.emit('did start draw')
-        }
+        this.emit('will start draw')
+        // set pause flag to false
+        this.drawPaused = false
+        // emit event "did start draw"
+        this.emit('did start draw')
     }
 
-    // stop draw cycle
+    /**
+     * Stop the current and future draw cycles
+     */
     stopDraw = () => {
         // emit event "did stop draw"
         this.emit('will stop draw')
@@ -167,20 +165,28 @@ class AnimatedCanvas extends EventEmitter {
         this.emit('did stop draw')
     }
 
-    // start draw cycle
+    /**
+     * Start a draw cycle if stopped
+     */
     startDraw = () => {
-        // emit event "will start draw"
-        this.emit('will start draw')
-        // set pause flag to false
-        this.drawPaused = false
-        // emit event "did start draw"
-        this.emit('did start draw')
+        if (this.drawPaused) {
+            // emit event "will start draw"
+            this.emit('will start draw')
+            // set pause flag to false
+            this.drawPaused = false
+            // draw
+            requestAnimationFrame(timestamp => {
+                this.draw(timestamp)
+            })
+            // emit event "did start draw"
+            this.emit('did start draw')
+        }
     }
 
-    // draw cycle function
-    // draws all views
-    // can be paused by setting drawPaused to true,
-    // automatically paused if no animations
+    /**
+     * Rerenders all views and their current animation frame with the timestamp
+     * @param timestamp the timestamp used to calculate animation frames for each view
+     */
     draw = (timestamp: number) => {
         // don't draw if paused
         if (this.drawPaused) return
@@ -213,6 +219,11 @@ class AnimatedCanvas extends EventEmitter {
         })
     }
 
+    /**
+     * Converts a position relative to the window to a position relative to the canvas
+     * @param point the position relative to the window
+     * @returns the position relative to the canvas
+     */
     getRelativePosition = (point: Point): Point => {
         const { x: boundingX, y: boundingY } = this.canvas.getBoundingClientRect()
         return {
