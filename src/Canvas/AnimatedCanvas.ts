@@ -5,7 +5,7 @@
 
 import View, { Point } from '../Views/View.js'
 import EventEmitter from '../Helpers/EventEmitter.js'
-import { CanvasEvent } from './Events.js'
+import { CanvasEvent } from '../Helpers/Events.js'
 
 class AnimatedCanvas extends EventEmitter {
     private canvas: HTMLCanvasElement;

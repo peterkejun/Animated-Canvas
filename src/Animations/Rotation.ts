@@ -1,49 +1,32 @@
 import Animation from './Animation.js'
-import { AnimationState } from './Constants.js'
-import { TimingFunction } from './TimingFunction.js'
-import { Graphics } from '../Views/View.js'
 
 class Rotation extends Animation {
-    srcAngle: number;
-    destAngle: number
-
+    /**
+     * Create a new rotation animation based on source and destination angles
+     * @constructor
+     * @param srcAngle - The angle to start with
+     * @param destAngle - The angle to rotate to
+     */
     constructor (srcAngle: number, destAngle: number) {
         super()
-        // source radians
-        this.srcAngle = srcAngle
-        // destination radians
-        this.destAngle = destAngle
-    }
-
-    // set current timing function
-    setTimingFunction = (timingFunction: TimingFunction): void => {
-        this.timingFunction = timingFunction
-    }
-
-    // delta angle from src to dest
-    get deltaAngle (): number {
-        return this.destAngle - this.srcAngle
-    }
-
-    // transform angle based on timestamp and timing function
-    transform = (timestamp: number, graphics: Graphics) => {
-        // set start timestamp if none
-        if (!this.startTimestamp) this.startTimestamp = timestamp
-        // set animation state to running
-        this.state = AnimationState.RUNNING
-        // % time since started
-        const percentTime = (timestamp - this.startTimestamp) / this.duration
-        // apply timing function for % progress
-        const progress = Math.min(1, this.timingFunction.apply(percentTime))
-        // translate angle
-        graphics.angle = this.srcAngle + this.deltaAngle * progress
-        // mark animation stopped if progress >= 100%
-        if (progress >= 1) {
-        // clear start timestamp
-            this.startTimestamp = undefined
-            // set animation state to finished
-            this.state = AnimationState.FINISHED
+        this.properties = {
+            // source radians
+            srcAngle,
+            // destination radians
+            destAngle
         }
+        this.transform = (graphics, { progress, properties }) => {
+            // translate angle
+            graphics.angle = properties.srcAngle + this.deltaAngle * progress
+        }
+    }
+
+    /**
+     * Calculate the difference between source and destination angles
+     * @returns the difference in radians
+     */
+    get deltaAngle (): number {
+        return this.properties.destAngle - this.properties.srcAngle
     }
 }
 

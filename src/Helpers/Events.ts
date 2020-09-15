@@ -9,3 +9,7 @@ export enum CanvasEvent {
     WILL_STOP_DRAW = 'will stop draw',
     DID_STOP_DRAW = 'did stop draw'
 }
+
+export enum AnimationEvents {
+    WILL
+}

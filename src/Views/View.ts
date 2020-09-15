@@ -56,7 +56,7 @@ class View {
     masterDraw = (context: CanvasRenderingContext2D, timestamp: number, canvasWidth: number, canvasHeight: number): void => {
         this.timestamp = timestamp
         this.animations.forEach(animation => {
-            animation.transform(timestamp, this.graphics)
+            animation.applyTransform(timestamp, this.graphics)
             if (animation.isFinished) {
                 this.animations.delete(animation)
             }
@@ -134,28 +134,26 @@ class View {
         }
         // add animation
         this.animations.add(animation)
+        // request redraw
+        if (this.delegate) {
+            this.delegate.requestRedraw()
+        }
     }
 
     hasAnimations = (): Boolean => this.animations.size !== 0;
 
     translate = (x: number, y: number, timingFunction?: TimingFunction): void => {
         const translation = new Translation(this.graphics.position.x, this.graphics.position.y, x, y)
-        if (timingFunction) translation.setTimingFunction(timingFunction)
+        if (timingFunction) translation.timingFunction = timingFunction
         this.addAnimation(translation)
         console.log(`new translation to ${x}, ${y}`)
-        if (this.delegate) {
-            this.delegate.requestRedraw()
-        }
     }
 
     rotateTo = (angle: number, timingFunction?: TimingFunction) => {
         const rotation = new Rotation(this.graphics.angle, angle)
-        if (timingFunction) rotation.setTimingFunction(timingFunction)
+        if (timingFunction) rotation.timingFunction = timingFunction
         this.addAnimation(rotation)
         console.log(`new rotation to angle ${angle}`)
-        if (this.delegate) {
-            this.delegate.requestRedraw()
-        }
     }
 }
 
