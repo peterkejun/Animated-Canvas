@@ -2,6 +2,13 @@ import { AnimationState } from './Constants.js'
 import { TimingFunction, LINEAR } from './TimingFunction.js'
 import { Graphics } from '../Views/View.js'
 import EventEmitter from '../Helpers/EventEmitter.js'
+import { AnimationEvent } from '../Helpers/Events.js'
+
+interface AnimationConfig {
+    duration?: number,
+    timingFunction?: TimingFunction,
+    transform?: TransformFunction
+}
 
 /**
  * Arbitrary object used to determine intermediate graphics in a custom animation
@@ -50,7 +57,7 @@ class Animation extends EventEmitter {
     /**
      * The transform function to modifies a view's graphics based on the transform configuration
      */
-    transform: TransformFunction = () => {};
+    transform: TransformFunction;
     /**
      * Arbitrary object used to determine intermediate graphics in a custom animation
      */
@@ -60,16 +67,27 @@ class Animation extends EventEmitter {
      * Create a new animation with default duration, linear timing function, and set it to the idle state
      * @constructor
      */
-    constructor () {
+    constructor (config?: AnimationConfig) {
         super()
         // startTimestamp is for calculating elasped time, reset before each animation
         this.startTimestamp = undefined
-        // default animation animation
-        this.duration = Animation.defaultDuration()
         // default to idle state
         this.state = AnimationState.IDLE
-        // default to linear timing function
-        this.timingFunction = LINEAR
+        // use default values if config is not given
+        if (!config) {
+            // default animation animation
+            this.duration = Animation.defaultDuration()
+
+            // default to linear timing function
+            this.timingFunction = LINEAR
+            // default transform function
+            this.transform = () => {}
+        } else {
+            // use config values
+            this.duration = config.duration || Animation.defaultDuration()
+            this.timingFunction = config.timingFunction || LINEAR
+            this.transform = config.transform || (() => {})
+        }
     }
 
     /**
@@ -105,7 +123,14 @@ class Animation extends EventEmitter {
         // set start timestamp if none
         if (!this.startTimestamp) this.startTimestamp = timestamp
         // set animation state to running
-        this.state = AnimationState.RUNNING
+        if (this.state !== AnimationState.RUNNING) {
+            // emit "will start" event
+            this.emit(AnimationEvent.WILL_START)
+            // change state to running
+            this.state = AnimationState.RUNNING
+            // emit "did start" event
+            this.emit(AnimationEvent.DID_START)
+        }
         // % time since started
         const percentTime = (timestamp - this.startTimestamp) / this.duration
         // apply timing function for % progress
@@ -119,13 +144,17 @@ class Animation extends EventEmitter {
             timingFunction: this.timingFunction,
             properties: this.properties
         }
+        this.emit(AnimationEvent.WILL_TRANSFORM)
         this.transform(graphics, config)
+        this.emit(AnimationEvent.DID_TRANSFORM)
         // mark animation stopped if progress >= 100%
         if (progress >= 1) {
             // clear start timestamp
             this.startTimestamp = undefined
             // set animation state to finished
+            this.emit(AnimationEvent.WILL_FINISH)
             this.state = AnimationState.FINISHED
+            this.emit(AnimationEvent.DID_FINISH)
         }
     }
 }

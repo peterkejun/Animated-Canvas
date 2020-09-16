@@ -10,6 +10,11 @@ export enum CanvasEvent {
     DID_STOP_DRAW = 'did stop draw'
 }
 
-export enum AnimationEvents {
-    WILL
+export enum AnimationEvent {
+    WILL_START = 'will start',
+    DID_START = 'did start',
+    WILL_FINISH = 'will finish',
+    DID_FINISH = 'did finish',
+    WILL_TRANSFORM = 'will transform',
+    DID_TRANSFORM = 'did transform'
 }
