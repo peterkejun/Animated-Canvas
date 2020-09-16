@@ -1,20 +1,28 @@
 /*
  Animated Canvas is an EventEmitter.
  EventEmitter has the same API as 'events.EventEmitter' in NodeJS.
- events: [
-        'did resize',
-        'did add view',
-        'will start draw', 'did start draw', 'will draw', 'did draw', 'did stop draw'
-    ]
 */
 
-import View, { Point } from '../Views/View.js'
+import View, { Point, Size } from '../Views/View.js'
 import EventEmitter from '../Helpers/EventEmitter.js'
+import { CanvasEvent } from '../Helpers/Events.js'
 
 class AnimatedCanvas extends EventEmitter {
+    /**
+     * The canvas DOM element to bind to
+     */
     private canvas: HTMLCanvasElement;
+    /**
+     * The 2D context object of the canvas
+     */
     private context: CanvasRenderingContext2D;
+    /**
+     * Views added to canvas sorted by z-index
+     */
     private views: Array<View>;
+    /**
+     * High-level switch to start/stop the draw cycle
+     */
     private drawPaused: Boolean;
 
     /**
@@ -23,6 +31,11 @@ class AnimatedCanvas extends EventEmitter {
      */
     onClick: (event: MouseEvent) => void;
 
+    /**
+     * Create a new AnimatedCanvas instance and bind it to a <canvas> DOM element
+     * @constructor
+     * @param canvas - the base <canvas> DOM element to bind with views and animations
+     */
     constructor (canvas: HTMLCanvasElement) {
         super()
         // html canvas to draw on
@@ -55,16 +68,23 @@ class AnimatedCanvas extends EventEmitter {
         }
     }
 
-    // returns current canvas size
+    /**
+     * Get current size of the canvas
+     * @returns the current size of the canvas
+     */
     getSize = () => {
         const { clientWidth: width, clientHeight: height } = this.canvas
         return { width, height }
     }
 
-    // resize canvas for HD
+    /**
+     * Resize the canvas
+     * @param width new width to resize the canvas
+     * @param height new height to resize the canvas
+     */
     resize = (width: number, height: number) => {
         // emit evnet "will resize"
-        this.emit('will resize', width, height)
+        this.emit(CanvasEvent.WILL_RESIZE, width, height)
         // 2x width, height for HD
         this.canvas.width = width * 2
         this.canvas.height = height * 2
@@ -74,7 +94,7 @@ class AnimatedCanvas extends EventEmitter {
         // scale 2x for HD
         this.context.scale(2, 2)
         // emit event "did resize"
-        this.emit('did resize', width, height)
+        this.emit(CanvasEvent.DID_RESIZE, width, height)
     }
 
     /**
@@ -123,52 +143,15 @@ class AnimatedCanvas extends EventEmitter {
             this.views.splice(index, 0, view)
         }
         // emit event "did add view"
-        this.emit('did add view', view)
+        this.emit(CanvasEvent.DID_ADD_VIEW, view)
         // start draw cycle if paused
-        if (this.drawPaused) {
-        // emit event "will start draw"
-            this.emit('will start draw')
-            // set pause flag to false
-            this.drawPaused = false
-            // draw
-            requestAnimationFrame(timestamp => {
-                this.draw(timestamp)
-            })
-            // emit event "did start draw"
-            this.emit('did start draw')
-        }
-        console.log(this.views)
+        this.startDraw()
     }
 
-    // force start draw cycle
-    // delegate function called by view
+    /**
+     * Force a draw cycle to start if not started already
+     */
     requestRedraw = () => {
-        if (this.drawPaused) {
-        // emit event "will start draw"
-            this.emit('will start draw')
-            // set pause flag to false
-            this.drawPaused = false
-            // draw
-            requestAnimationFrame(timestamp => {
-                this.draw(timestamp)
-            })
-            // emit event "did start draw"
-            this.emit('did start draw')
-        }
-    }
-
-    // stop draw cycle
-    stopDraw = () => {
-        // emit event "did stop draw"
-        this.emit('will stop draw')
-        // set pause flag to true
-        this.drawPaused = true
-        // emit event "did stop draw"
-        this.emit('did stop draw')
-    }
-
-    // start draw cycle
-    startDraw = () => {
         // emit event "will start draw"
         this.emit('will start draw')
         // set pause flag to false
@@ -177,16 +160,50 @@ class AnimatedCanvas extends EventEmitter {
         this.emit('did start draw')
     }
 
-    // draw cycle function
-    // draws all views
-    // can be paused by setting drawPaused to true,
-    // automatically paused if no animations
+    /**
+     * Stop the current and future draw cycles
+     */
+    stopDraw = () => {
+        // emit event "will stop draw"
+        this.emit(CanvasEvent.WILL_STOP_DRAW)
+        // set pause flag to true
+        this.drawPaused = true
+        // emit event "did stop draw"
+        this.emit(CanvasEvent.DID_STOP_DRAW)
+    }
+
+    /**
+     * Start a draw cycle if stopped
+     */
+    startDraw = () => {
+        if (this.drawPaused) {
+            // emit event "will start draw"
+            this.emit('will start draw')
+            // set pause flag to false
+            this.drawPaused = false
+            // draw
+            requestAnimationFrame(timestamp => {
+                this.draw(timestamp)
+            })
+            // emit event "did start draw"
+            this.emit('did start draw')
+        }
+    }
+
+    /**
+     * Rerenders all views and their current animation frame with the timestamp
+     * @param timestamp the timestamp used to calculate animation frames for each view
+     */
     draw = (timestamp: number) => {
         // don't draw if paused
         if (this.drawPaused) return
         // emit event 'will draw'
-        this.emit('will draw', timestamp)
+        this.emit(CanvasEvent.WILL_DRAW, timestamp)
         // get canvas size
+        const canvasSize: Size = {
+            width: this.canvas.clientWidth,
+            height: this.canvas.clientHeight
+        }
         const { clientWidth: canvasWidth, clientHeight: canvasHeight } = this.canvas
         // clear canvas
         this.context.clearRect(0, 0, canvasWidth, canvasHeight)
@@ -194,7 +211,7 @@ class AnimatedCanvas extends EventEmitter {
         let hasAnimation = false
         for (const view of this.views) {
         // draw this view
-            view.masterDraw(this.context, timestamp, canvasWidth, canvasHeight)
+            view.masterDraw(this.context, timestamp, canvasSize)
             // check if this view has any animations
             if (view.hasAnimations()) {
                 hasAnimation = true
@@ -202,17 +219,22 @@ class AnimatedCanvas extends EventEmitter {
         }
         // pause draw cycle if no views or no animations
         if (this.views.length === 0 || !hasAnimation) {
-            this.emit('did stop draw', timestamp)
+            this.emit(CanvasEvent.DID_STOP_DRAW, timestamp)
             this.drawPaused = true
         }
         // emit event 'did draw'
-        this.emit('did draw', timestamp)
+        this.emit(CanvasEvent.DID_DRAW, timestamp)
         // next frame
         requestAnimationFrame(timestamp => {
             this.draw(timestamp)
         })
     }
 
+    /**
+     * Converts a position relative to the window to a position relative to the canvas
+     * @param point the position relative to the window
+     * @returns the position relative to the canvas
+     */
     getRelativePosition = (point: Point): Point => {
         const { x: boundingX, y: boundingY } = this.canvas.getBoundingClientRect()
         return {
