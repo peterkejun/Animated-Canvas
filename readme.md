@@ -1,6 +1,6 @@
 # Animated Canvas
 
-![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiWHhkSlpzU0tsbTRUNTFQNStKSWNBUFZ6N29jL2lVdWxSNWV3ZVV2Ky9oNDQxWk5PQ3lNL0dXMjIvK1hTdGhNWTY5NkpMVVduS1BQZmpnSURNVzdkbXZVPSIsIml2UGFyYW1ldGVyU3BlYyI6IklRK3dxdnRvcUN3ZkZjUmoiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)[![npm version](https://badge.fury.io/js/animated-canvas.svg)](https://badge.fury.io/js/animated-canvas)
+![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiWHhkSlpzU0tsbTRUNTFQNStKSWNBUFZ6N29jL2lVdWxSNWV3ZVV2Ky9oNDQxWk5PQ3lNL0dXMjIvK1hTdGhNWTY5NkpMVVduS1BQZmpnSURNVzdkbXZVPSIsIml2UGFyYW1ldGVyU3BlYyI6IklRK3dxdnRvcUN3ZkZjUmoiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/peterkejun/Animated-Canvas/blob/master/LICENSE) [![npm version](https://badge.fury.io/js/animated-canvas.svg)](https://badge.fury.io/js/animated-canvas)
 
 Animated Canvas is a JavaScript library for rendering 2D graphics and animations on the HTML canvas.
 
