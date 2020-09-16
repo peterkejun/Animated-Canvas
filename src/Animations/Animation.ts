@@ -4,6 +4,9 @@ import { Graphics } from '../Views/View.js'
 import EventEmitter from '../Helpers/EventEmitter.js'
 import { AnimationEvent } from '../Helpers/Events.js'
 
+/**
+ * Configuation object to construct a new Animation
+ */
 interface AnimationConfig {
     duration?: number,
     timingFunction?: TimingFunction,

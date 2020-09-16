@@ -3,14 +3,26 @@
  EventEmitter has the same API as 'events.EventEmitter' in NodeJS.
 */
 
-import View, { Point } from '../Views/View.js'
+import View, { Point, Size } from '../Views/View.js'
 import EventEmitter from '../Helpers/EventEmitter.js'
 import { CanvasEvent } from '../Helpers/Events.js'
 
 class AnimatedCanvas extends EventEmitter {
+    /**
+     * The canvas DOM element to bind to
+     */
     private canvas: HTMLCanvasElement;
+    /**
+     * The 2D context object of the canvas
+     */
     private context: CanvasRenderingContext2D;
+    /**
+     * Views added to canvas sorted by z-index
+     */
     private views: Array<View>;
+    /**
+     * High-level switch to start/stop the draw cycle
+     */
     private drawPaused: Boolean;
 
     /**
@@ -70,7 +82,6 @@ class AnimatedCanvas extends EventEmitter {
      * @param width new width to resize the canvas
      * @param height new height to resize the canvas
      */
-    // resize canvas for HD
     resize = (width: number, height: number) => {
         // emit evnet "will resize"
         this.emit(CanvasEvent.WILL_RESIZE, width, height)
@@ -189,6 +200,10 @@ class AnimatedCanvas extends EventEmitter {
         // emit event 'will draw'
         this.emit(CanvasEvent.WILL_DRAW, timestamp)
         // get canvas size
+        const canvasSize: Size = {
+            width: this.canvas.clientWidth,
+            height: this.canvas.clientHeight
+        }
         const { clientWidth: canvasWidth, clientHeight: canvasHeight } = this.canvas
         // clear canvas
         this.context.clearRect(0, 0, canvasWidth, canvasHeight)
@@ -196,7 +211,7 @@ class AnimatedCanvas extends EventEmitter {
         let hasAnimation = false
         for (const view of this.views) {
         // draw this view
-            view.masterDraw(this.context, timestamp, canvasWidth, canvasHeight)
+            view.masterDraw(this.context, timestamp, canvasSize)
             // check if this view has any animations
             if (view.hasAnimations()) {
                 hasAnimation = true
