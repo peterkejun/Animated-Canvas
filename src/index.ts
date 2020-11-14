@@ -11,3 +11,4 @@ export * from './Helpers/Events.js'
 
 // View
 export { default as View } from './Views/View.js'
+export { default as SVGPathView } from './Views/SVGPathView.js'

@@ -64,9 +64,20 @@ class View {
      * @param graphics Grapical properties
      * @param draw A draw function that specifies how to render this view
      */
-    constructor (graphics: Graphics, draw: DrawFunction) {
-        this.graphics = graphics
-        this.draw = draw
+    constructor (graphics?: Graphics, draw?: DrawFunction) {
+        this.graphics = graphics || {
+            position: {
+                x: 0,
+                y: 0
+            },
+            size: {
+                width: 0,
+                height: 0
+            },
+            angle: 0,
+            zIndex: 0
+        }
+        this.draw = draw || (() => {})
         this.delegate = null
         this.animations = new Set()
     }

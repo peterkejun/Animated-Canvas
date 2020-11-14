@@ -152,12 +152,7 @@ class AnimatedCanvas extends EventEmitter {
      * Force a draw cycle to start if not started already
      */
     requestRedraw = () => {
-        // emit event "will start draw"
-        this.emit('will start draw')
-        // set pause flag to false
-        this.drawPaused = false
-        // emit event "did start draw"
-        this.emit('did start draw')
+        this.startDraw()
     }
 
     /**
