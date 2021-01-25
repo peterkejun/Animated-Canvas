@@ -1,4 +1,4 @@
-import View, { Point, Size } from './View.js'
+import View, { Graphics, Point, Size } from './View.js'
 
 interface SVGPathTransform {
     translate: Point,
@@ -21,8 +21,8 @@ class SVGPathView extends View {
     d: string;
     path: Path2D;
     transform: SVGPathTransform
-    constructor (config: SVGPathViewConfig) {
-        super()
+    constructor (graphics: Graphics, config: SVGPathViewConfig) {
+        super(graphics)
         this.setD(config.d)
         this.transform = config.transform
         this.draw = (context: CanvasRenderingContext2D, canvasSize: Size, position: Point) => {
