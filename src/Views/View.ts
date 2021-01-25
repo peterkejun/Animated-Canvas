@@ -108,19 +108,16 @@ class View {
         })
         // save the current state
         context.save()
-        // translate the context by this view's position
+        // rotate
         context.translate(this.graphics.position.x, this.graphics.position.y)
-        // rotate the context by this view's angle
         context.rotate(this.graphics.angle)
-        // translate the context back
         context.translate(-this.graphics.position.x, -this.graphics.position.y)
-        // scale the context
+        // translate
+        context.translate(this.graphics.position.x, this.graphics.position.y)
+        // scale
         context.scale(this.graphics.scale.x, this.graphics.scale.y)
-        context.translate(this.graphics.position.x * (1 - this.graphics.scale.x) / this.graphics.scale.x, this.graphics.position.y * (1 - this.graphics.scale.y) / this.graphics.scale.y)
-        // call this view's draw function to render this view
-        context.beginPath()
+        // draw
         this.draw(context, canvasSize, this.graphics.position, timestamp)
-        context.closePath()
         // restore the current state
         context.restore()
     }
