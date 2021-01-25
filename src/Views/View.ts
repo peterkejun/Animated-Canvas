@@ -18,7 +18,25 @@ export interface Graphics {
     size: Size,
     angle: number,
     zIndex: number,
+    scale: Point,
 };
+
+export const DEFAULT_GRAPHICS: Graphics = {
+    position: {
+        x: 0,
+        y: 0
+    },
+    size: {
+        width: 0,
+        height: 0
+    },
+    angle: 0,
+    zIndex: 0,
+    scale: {
+        x: 1,
+        y: 1
+    }
+}
 
 type DrawFunction = (
     context: CanvasRenderingContext2D,
@@ -65,18 +83,7 @@ class View {
      * @param draw A draw function that specifies how to render this view
      */
     constructor (graphics?: Graphics, draw?: DrawFunction) {
-        this.graphics = graphics || {
-            position: {
-                x: 0,
-                y: 0
-            },
-            size: {
-                width: 0,
-                height: 0
-            },
-            angle: 0,
-            zIndex: 0
-        }
+        this.graphics = Object.assign({}, DEFAULT_GRAPHICS, graphics)
         this.draw = draw || (() => {})
         this.delegate = null
         this.animations = new Set()
@@ -107,6 +114,9 @@ class View {
         context.rotate(this.graphics.angle)
         // translate the context back
         context.translate(-this.graphics.position.x, -this.graphics.position.y)
+        // scale the context
+        context.scale(this.graphics.scale.x, this.graphics.scale.y)
+        context.translate(this.graphics.position.x * (1 - this.graphics.scale.x) / this.graphics.scale.x, this.graphics.position.y * (1 - this.graphics.scale.y) / this.graphics.scale.y)
         // call this view's draw function to render this view
         context.beginPath()
         this.draw(context, canvasSize, this.graphics.position, timestamp)
