@@ -29,7 +29,7 @@ class SVGPathView extends View {
             context.fillStyle = config.style.fill
             context.strokeStyle = config.style.stroke
             context.lineWidth = config.style.strokeWidth
-            context.translate(this.transform.translate.x + position.x, this.transform.translate.y + position.y)
+            context.translate(this.transform.translate.x, this.transform.translate.y)
             context.scale(this.transform.scale.x, this.transform.scale.y)
             context.fill(this.path)
             context.stroke(this.path)

@@ -108,6 +108,7 @@ class View {
         })
         // save the current state
         context.save()
+        context.translate(this.graphics.position.x, this.graphics.position.y)
         // translate the context by this view's position
         context.translate(this.graphics.position.x, this.graphics.position.y)
         // rotate the context by this view's angle
