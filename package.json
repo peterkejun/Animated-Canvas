@@ -1,6 +1,6 @@
 {
   "name": "animated-canvas",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "An animation framework for native HTML canvas",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
